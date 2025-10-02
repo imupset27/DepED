@@ -1,11 +1,8 @@
 library(shiny)
 library(readxl)
-library(dplyr)
-library(stringr)
-library(tibble)
+library(tidyverse)
 library(openxlsx)
-library(purrr)
-library(tidyr)
+library(auth0)
 
 ui <- fluidPage(
   titlePanel("📚 Consolidated Student Grades (Long Format)"),
@@ -339,4 +336,4 @@ server <- function(input, output, session) {
   )
 }
 
-shinyApp(ui, server)
+auth0::shinyAppAuth0(ui = ui, server = server)
