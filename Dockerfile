@@ -25,6 +25,6 @@ EXPOSE 3838
 WORKDIR /srv/shiny-server
 
 # Optionally, if you want to include _auth0.yml in the image (not recommended for secrets)
-#COPY _auth0.yml /srv/shiny-server/_auth0.yml
+COPY _auth0.yml /srv/shiny-server/_auth0.yml
 
-RUN echo "options(auth0_find_config_file = '/srv/shiny-server/app/_auth0.yml')" > /usr/local/lib/R/etc/Rprofile.site
+# RUN echo "options(auth0_find_config_file = '/srv/shiny-server/app/_auth0.yml')" > /usr/local/lib/R/etc/Rprofile.site
