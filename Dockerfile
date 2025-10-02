@@ -1,30 +1,18 @@
-# Use the official Shiny image from Rocker
+# Dockerfile
 FROM rocker/shiny:latest
 
-# Install required R packages including Auth0 dependencies
+# Install the packages you need; auth0 requires httr, shinyjs, yaml (it pulls deps)
 RUN install2.r --error --skipinstalled \
     auth0 \
     shiny \
     tidyverse \
     readxl \
-    openxlsx \
-    shinyjs \
-    httr \
-    yaml
+    openxlsx
 
-# Copy your Shiny app into the Shiny Server directory
+# Copy your app into Shiny Server's root
 COPY . /srv/shiny-server/
 
-# Optional: log Shiny output to stdout for easier debugging in Portainer
+# Optional: log to stdout (easier in Portainer)
 ENV APPLICATION_LOGS_TO_STDOUT=true
 
-# Expose the default Shiny port
 EXPOSE 3838
-
-# Set working directory (optional but good practice)
-WORKDIR /srv/shiny-server
-
-# Optionally, if you want to include _auth0.yml in the image (not recommended for secrets)
-COPY _auth0.yml /srv/shiny-server/_auth0.yml
-
-# RUN echo "options(auth0_find_config_file = '/srv/shiny-server/app/_auth0.yml')" > /usr/local/lib/R/etc/Rprofile.site
