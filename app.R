@@ -336,5 +336,5 @@ server <- function(input, output, session) {
   )
 }
 
-#auth0::shinyAppAuth0(ui = ui, server = server)
-shinyApp(ui = ui, server = server)
+auth0::shinyAppAuth0(ui = ui, server = server)
+# shinyApp(ui = ui, server = server)
