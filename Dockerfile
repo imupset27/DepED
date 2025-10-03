@@ -1,5 +1,6 @@
-# Use the official Shiny image
-FROM rocker/shiny:latest
+FROM rocker/shiny:4.0.0
+
+WORKDIR /srv/shiny-server
 
 # Install required R packages
 RUN install2.r --error --skipinstalled \
