@@ -1,4 +1,4 @@
-FROM rocker/shiny:4.0.0
+FROM rocker/shiny:latest
 
 WORKDIR /srv/shiny-server
 
