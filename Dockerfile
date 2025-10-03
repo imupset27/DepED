@@ -16,7 +16,7 @@ RUN install2.r --error --skipinstalled \
 COPY . /srv/shiny-server/
 
 # Make sure auth0.yml is in the same directory as app.R
-COPY auth0.yml /srv/shiny-server/auth0.yml
+COPY _auth0.yml /srv/shiny-server/_auth0.yml
 
 # Optional: log to stdout for easier debugging in Portainer
 ENV APPLICATION_LOGS_TO_STDOUT=true
