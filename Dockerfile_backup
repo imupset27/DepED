@@ -12,6 +12,7 @@ RUN install2.r --error --skipinstalled \
 # Copy your app into Shiny Server's root
 COPY . /srv/shiny-server/
 
+
 # Optional: log to stdout (easier in Portainer)
 ENV APPLICATION_LOGS_TO_STDOUT=true
 
