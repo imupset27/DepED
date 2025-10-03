@@ -4,6 +4,8 @@ library(tidyverse)
 library(openxlsx)
 library(auth0)
 library(yaml)
+library(shinyjs)
+library(httr)
 
 ui <- fluidPage(
   titlePanel("📚 Consolidated Student Grades (Long Format)"),
