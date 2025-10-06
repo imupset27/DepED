@@ -11,7 +11,11 @@ RUN install2.r --error --skipinstalled \
     readxl \
     openxlsx \
     yaml \
-    httr
+    httr \
+    bs4Dash \
+    shinyWidgets \
+    fontawesome 
+
 
 # Copy your Shiny app into the container
 COPY . /srv/shiny-server/
