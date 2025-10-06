@@ -7,7 +7,7 @@ library(yaml)
 library(shinyjs)
 library(httr)
 
-ui <- fluidPage(
+ui <-  fluidPage(
   titlePanel("📚 Consolidated Student Grades (Long Format)"),
   
   sidebarLayout(
@@ -339,5 +339,5 @@ server <- function(input, output, session) {
   )
 }
 
-auth0::shinyAppAuth0(ui = ui, server = server)
+auth0::shinyAppAuth0(ui = auth0_ui(ui), server = auth0_server(server))
 #shinyApp(ui = ui, server = server)
