@@ -5,3 +5,6 @@ auth0_config:
   credentials:
     key:    !expr Sys.getenv("AUTH0_KEY")
     secret: !expr Sys.getenv("AUTH0_SECRET")
+redirect_uri: http://localhost:8080
+logout_url: http://localhost:8080
+
