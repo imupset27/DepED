@@ -14,7 +14,9 @@ RUN install2.r --error --skipinstalled \
     httr \
     bs4Dash \
     shinyWidgets \
-    fontawesome 
+    fontawesome \
+    DT \
+    purrr
 
 
 # Copy your Shiny app into the container
