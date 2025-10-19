@@ -216,30 +216,42 @@ mod_deped_sf2_ui <- function(id) {
   
   tagList(
     shinyjs::useShinyjs(),
-    tags$head(tags$style(HTML(
-      "
-      .auth-box{max-width:520px;margin:24px auto}
-      .note{color:#666}
-      .status-badge{font-weight:600;padding:4px 10px;border-radius:8px;background:#eef}
-      .qr-card{display:inline-block;margin:8px;padding:8px;border:1px solid #ddd;border-radius:6px;text-align:center}
-      .qr-img{width:200px;height:200px}
-      .panel{border:1px solid #ddd;border-radius:6px;margin-bottom:16px}
-      .panel .panel-header{padding:10px 14px;font-weight:600;border-bottom:1px solid #eee;background:#f7f7f7}
-      .panel .panel-body{padding:14px}
-      "
-    ))),
-    
-    
-    tags$head(
-      tags$link(
-        rel = "stylesheet",
-        href = "https://cdn.jsdelivr.net/npm/bootstrap@3.4.1/dist/css/bootstrap.min.css"
-      )
-    ),
+    tags$head(tags$style(HTML("
+    /* Layout helpers (unchanged) */
+    .auth-box{max-width:520px;margin:24px auto}
+    .note{color:#666}
+    .status-badge{font-weight:600;padding:4px 10px;border-radius:8px;background:#eef}
+    .qr-card{display:inline-block;margin:8px;padding:8px;border:1px solid #ddd;border-radius:6px;text-align:center}
+    .qr-img{width:200px;height:200px}
+
+    /* --- Bootstrap 3-like 'panel' look, recreated for Bootstrap 4 --- */
+    .panel { background:#fff; border:1px solid #dee2e6; border-radius:8px; margin-bottom:16px;
+             box-shadow:0 2px 8px rgba(0,0,0,.05); }
+    .panel .panel-header { padding:10px 14px; font-weight:600; border-bottom:1px solid #e9ecef;
+                           background:#f8f9fa; color:#0d6efd; }
+    .panel .panel-body { padding:14px; }
+
+    /* --- TabsetPanel color tweaks --- */
+    .nav-tabs .nav-link { color:#0b5ed7; font-weight:600; }
+    .nav-tabs .nav-link.active { color:#0b5ed7; background:#fff;
+                                 border-color:#dee2e6 #dee2e6 #fff; }
+
+    /* --- Buttons palette (keeps bs4Dash theme but nudges the colors) --- */
+    .btn-primary { background-color:#0d6efd; border-color:#0b5ed7; }
+    .btn-warning { background-color:#ffc107; border-color:#ffca2c; color:#212529; }
+    .btn-danger  { background-color:#dc3545; border-color:#d32535; }
+    .btn-success { background-color:#28a745; border-color:#218838; }
+
+    /* --- Tables: header accent (for DT tables) --- */
+    table.dataTable thead th { background:#f8f9fa; color:#0b5ed7; }
+
+    /* --- Minor typography accents --- */
+    h2, h3, .panel .panel-header { letter-spacing:.2px; }
+  "))),
     
     
     tabsetPanel(
-      id = ns("tabs"),
+      id = ns("sf2_tabs"),
       
       # --- Login ---
       tabPanel(title = "Login", value = "login",
@@ -407,8 +419,8 @@ mod_deped_sf2_server <- function(id) {
     # Disable Student tab
     DISABLE_STUDENT_TAB <- TRUE
     observe({
-      if (isTRUE(DISABLE_STUDENT_TAB) && identical(input$tabs, "student")) {
-        updateTabsetPanel(session, "tabs", selected = "login")
+      if (isTRUE(DISABLE_STUDENT_TAB) && identical(input$sf2_tabs, "student")) {
+        updateTabsetPanel(session, "sf2_tabs", selected = "login")
         showNotification("Student tab is temporarily disabled. Please use QR scanning.", type = "warning")
       }
     })
@@ -463,22 +475,22 @@ mod_deped_sf2_server <- function(id) {
       u <- users_live(); rec <- u %>% dplyr::filter(user_id == input$user_id, role == input$role)
       if (nrow(rec) == 1 && digest(input$password, "sha256") == rec$password_hash[1]) {
         rv$auth$is_auth <- TRUE; rv$auth$role <- input$role; rv$auth$user_id <- input$user_id
-        updateTabsetPanel(session, "tabs", selected = "teacher")
+        updateTabsetPanel(session, "sf2_tabs", selected = "teacher")
         showNotification(sprintf("Welcome, %s", rec$full_name[1]), type="message")
       } else showNotification("Invalid credentials", type="error")
     })
     
     # Guard Teacher-only tabs
     observe({
-      req(input$tabs)  # ensures input$tabs exists before checking
+      req(input$sf2_tabs)  # ensures input$tabs exists before checking
       
-      if (input$tabs %in% c("teacher","users","qr")) {
+      if (input$sf2_tabs %in% c("teacher","users","qr")) {
         # make sure rv$auth exists and has the needed fields
         req(rv$auth$is_auth, rv$auth$role)
         
         if (!isTRUE(rv$auth$is_auth) || rv$auth$role != "teacher") {
           showNotification("Teacher login required.", type = "error")
-          updateTabsetPanel(session, "tabs", selected = "login")
+          updateTabsetPanel(session, "sf2_tabs", selected = "login")
         }
       }
     })
@@ -573,12 +585,17 @@ mod_deped_sf2_server <- function(id) {
       datatable(
         build_users_display(u),
         escape = FALSE, selection = "none", rownames = FALSE, options = list(pageLength = 8),
+        
         callback = DT::JS(
-          paste0("table.on('click','button.del-btn',function(){",
-                 "var uid=$(this).data('id');",
-                 "Shiny.setInputValue('", ns("delete_user_id"), "', uid, {priority:'event'});",
-                 "});")
+          sprintf(
+            "table.on('click','button.del-btn',function(){var uid=$(this).data('id');Shiny.setInputValue('%s', uid, {priority:'event'});});",
+            ns("delete_user_id")
+          )
         )
+        
+        
+        
+        
       )
     }, server = TRUE)
     
@@ -744,8 +761,11 @@ mod_deped_sf2_server <- function(id) {
     
     # Persist
     session$onSessionEnded(function() {
-      att <- isolate(att_live()); usr <- isolate(users_live())
-      save_attendance(att); save_users(usr)
+      att <- isolate(att_live())
+      usr <- isolate(users_live())
+      if (!file.exists(.attendance_rds_path)) seed_attendance()
+      save_attendance(att)
+      save_users(usr)
     })
   })
 }

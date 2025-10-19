@@ -1,7 +1,7 @@
 # --- Options you may keep in app.R (recommended) ---
 # options(shiny.host = "192.168.254.105", shiny.port = 8080)
 options(shiny.maxRequestSize = 30*1024^2)     # ~30MB uploads
-# options(shiny.fullstacktrace = TRUE)          # helpful while debugging
+options(shiny.fullstacktrace = TRUE)          # helpful while debugging
 
 # app.R
 library(shiny)
@@ -30,7 +30,7 @@ ui <- bs4DashPage(
   
   sidebar = dashboardSidebar(
     sidebarMenu(
-      id = "tabs",
+      id = "main_tabs",
       menuItem("Home", tabName = "home", icon = icon("home")),
       menuItem("DepEd Reports", tabName = "deped", icon = icon("school")),
       menuItem("Statistical Tools", tabName = "stat", icon = icon("chart-line")),
@@ -262,10 +262,10 @@ ui <- bs4DashPage(
 
 # -------------------- SERVER --------------------
 server <- function(input, output, session) {
-  observeEvent(input$open_deped, updateTabItems(session, "tabs", "deped"))
-  observeEvent(input$open_stat, updateTabItems(session, "tabs", "stat"))
-  observeEvent(input$open_research, updateTabItems(session, "tabs", "research"))
-  observeEvent(input$open_consult, updateTabItems(session, "tabs", "consult"))
+  observeEvent(input$open_deped, updateTabItems(session, "main_tabs", "deped"))
+  observeEvent(input$open_stat, updateTabItems(session, "main_tabs", "stat"))
+  observeEvent(input$open_research, updateTabItems(session, "main_tabs", "research"))
+  observeEvent(input$open_consult, updateTabItems(session, "main_tabs", "consult"))
   
   mod_deped_server("deped")
 }
