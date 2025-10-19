@@ -3,16 +3,22 @@
 # Self-contained fluidPage app + merged-cell-aware SF2 template writer
 # Writes ONLY: Date row, DOW row, No.+Name, attendance marks; preserves merges & formulas.
 # --------------------------------------------------------------------
+library("shiny")
+library("DT")
+library("dplyr")
+library("tidyr")
+library("lubridate")
+library("writexl")
+library("digest")
+library("shinyjs")
+library("tibble")
+library("qrcode")
+library("zip")
+library("readxl")
+library("grid")
+library("htmltools")
+library("openxlsx")
 
-# ---- Packages (auto-install if missing) ----
-.local_pkgs <- c(
-  "shiny","DT","dplyr","tidyr","lubridate",
-  "writexl","digest","shinyjs","tibble","qrcode","zip",
-  "readxl","grid","htmltools","openxlsx"
-)
-.miss <- .local_pkgs[!.local_pkgs %in% rownames(installed.packages())]
-if (length(.miss)) install.packages(.miss, repos = "https://cloud.r-project.org")
-invisible(lapply(.local_pkgs, require, character.only = TRUE))
 
 # ---- Options ----
 # options(shiny.host = "0.0.0.0", shiny.port = 8080)
