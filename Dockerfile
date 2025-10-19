@@ -16,7 +16,7 @@ RUN install2.r --error --skipinstalled \
     shinyWidgets \
     fontawesome \
     DT \
-    purr \
+    purrr \
     dplyr \
     tidyr \
     lubridate \
