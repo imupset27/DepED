@@ -16,20 +16,7 @@ RUN install2.r --error --skipinstalled \
     shinyWidgets \
     fontawesome \
     DT \
-    purr \
-    dplyr \
-    tidyr \
-    lubridate \
-    writexl \
-    digest \
-    tibble \
-    qrcode \
-    zip \
-    grid \
-    htmltools
-
-
-
+    purrr
 
 
 # Copy your Shiny app into the container
