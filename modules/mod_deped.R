@@ -69,17 +69,30 @@ mod_deped_ui <- function(id) {
                div(id = ns("card_lrn"), class = "feature-card",
                    `onclick` = sprintf("Shiny.setInputValue('%s', true, {priority: 'event'})", ns("card_lrn")),
                    icon("chart-bar", class = "feature-icon"),
-                   tags$h5("Performance Dashboards"),
-                   tags$p("Visualize school and student performance with interactive dashboards. (Coming soon)"))
+                   tags$h5("LRN Extractor"),
+                   tags$p("Extract and manage Learner Reference Numbers from DepEd SF1 in seconds."))
         ),
         column(4,
-               div(id = ns("card_calculators"), class = "feature-card",
-                   `onclick` = sprintf("Shiny.setInputValue('%s', true, {priority: 'event'})", ns("card_calculators")),
+               div(id = ns("card_mps"), class = "feature-card",
+                   `onclick` = sprintf("Shiny.setInputValue('%s', true, {priority: 'event'})", ns("card_mps")),
                    icon("calculator", class = "feature-icon"),
-                   tags$h5("Automated Calculators"),
-                   tags$p("Compute mastery levels, averages, and rankings easily. (Coming soon)"))
+                   tags$h5("Mean Percentage Score (Quarterly Assessment)"),
+                   tags$p("Streamline and simplify the generation and calculations for your test results."))
+        )
+      ),
+      br(),
+      
+      fluidRow(
+        column(4,
+               div(id = ns("card_sf2"), class = "feature-card",
+                   `onclick` = sprintf("Shiny.setInputValue('%s', true, {priority: 'event'})", ns("card_sf2")),
+                   icon("school", class = "feature-icon"),
+                   tags$h5("SF2: Attendance App"),
+                   tags$p("Attendance System with use of QR codes and automatic downloadable realtime reports."))
         )
       )
+      
+      
     ),
     
     br(),
@@ -94,7 +107,8 @@ mod_deped_server <- function(id) {
     
     observeEvent(input$card_grades, { rv("grades") })
     observeEvent(input$card_lrn, { rv("lrn") })
-    observeEvent(input$card_calculators, { rv("calculators") })
+    observeEvent(input$card_mps, { rv("mps") })
+    observeEvent(input$card_sf2, { rv("sf2") })
     
     observe({
       if (is.null(rv())) {
@@ -108,9 +122,10 @@ mod_deped_server <- function(id) {
       req(rv())
       tagList(
         switch(rv(),
-               "grades" = mod_deped_sf9_ui(ns("grades")),
                "lrn" = mod_deped_sf1_ui(ns("lrn")),
-               "calculators" = tags$h3("Automated Calculators App (Coming Soon)")
+               "sf2" = mod_deped_sf2_ui(ns("sf2")),
+               "grades" = mod_deped_sf9_ui(ns("grades")),
+               "mps" = mod_deped_mps_ui(ns("mps"))
         ),
         hr(),
         div(
@@ -128,6 +143,8 @@ mod_deped_server <- function(id) {
     observeEvent(rv(), {
       if (rv() == "grades") mod_deped_sf9_server("grades")
       else if (rv() == "lrn") mod_deped_sf1_server("lrn")
+      else if (rv() == "mps") mod_deped_mps_server("mps")
+      else if (rv() == "sf2") mod_deped_sf2_server("sf2")
     }, ignoreInit = TRUE)
     
   })

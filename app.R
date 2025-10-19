@@ -1,3 +1,8 @@
+# --- Options you may keep in app.R (recommended) ---
+# options(shiny.host = "192.168.254.105", shiny.port = 8080)
+options(shiny.maxRequestSize = 30*1024^2)     # ~30MB uploads
+# options(shiny.fullstacktrace = TRUE)          # helpful while debugging
+
 # app.R
 library(shiny)
 library(bs4Dash)
@@ -8,7 +13,9 @@ library(shinyjs)
 # ---- MODULES ----
 source("modules/mod_deped.R")
 source("modules/mod_deped_sf1.R")
+source("modules/mod_deped_sf2.R")
 source("modules/mod_deped_sf9.R")
+source("modules/mod_deped_mps.R")
 
 # -------------------- UI --------------------
 ui <- bs4DashPage(
@@ -151,18 +158,104 @@ ui <- bs4DashPage(
           
           tags$div(
             class = "footer",
-            HTML("© 2025 <b>EMLStat Analytics & Consulting</b> | 
-                 <i class='fa fa-envelope'></i> info@emlstat.com | 
-                 <i class='fa fa-phone'></i> +63 912 345 6789")
+            # Brand
+            tags$span("© 2025 "),
+            tags$b("EMLStat Analytics & Consulting"),
+            
+            # Spacing separator
+            HTML(" | "),
+            
+            # Email link
+            tags$a(
+              href = "mailto:info@emlstat.uk",
+              aria_label = "Email EMLStat",
+              style = "text-decoration:none;color:inherit",
+              icon("envelope"), " info@emlstat.uk"
+            ),
+            
+            HTML(" | "),
+            
+            # Phone link
+            tags$a(
+              href = "tel:+639286563785",
+              aria_label = "Call EMLStat",
+              style = "text-decoration:none;color:inherit",
+              icon("phone"), " +63 928 656 3785"
+            ),
+            
+            HTML(" | "),
+            
+            # WhatsApp link (with optional pre-filled message)
+            tags$a(
+              href = "https://wa.me/639286563785?text=Hi%20EMLStat%2C%20I%27d%20like%20to%20inquire%20about%20consulting%20and%20training.",
+              target = "_blank", rel = "noopener",
+              aria_label = "Chat on WhatsApp",
+              style = "text-decoration:none;color:#25D366",
+              icon("whatsapp"), " WhatsApp"
+            )
           )
         )
       ),
       
       tabItem(tabName = "deped", mod_deped_ui("deped")),
-      tabItem(tabName = "stat", fluidPage(tags$h3("Statistical Tools (Module Placeholder)"))),
-      tabItem(tabName = "research", fluidPage(tags$h3("Research Dashboard (Module Placeholder)"))),
-      tabItem(tabName = "consult", fluidPage(tags$h3("Consulting & Training"), tags$p("Contact us at info@emlstat.com for project collaborations and workshops."))),
-      tabItem(tabName = "about", fluidPage(tags$h2("About EMLStat"), tags$p("EMLStat Analytics & Consulting helps institutions make better decisions using data.")))
+      tabItem(tabName = "stat", fluidPage(tags$h3("Statistical Tools (Under Construction)"))),
+      tabItem(tabName = "research", fluidPage(tags$h3("Research Dashboard (Under Construction)"))),
+      tabItem(
+        tabName = "consult",
+        fluidPage(
+          tags$h2("Consulting & Training"),
+          tags$p("Partner with EMLStat Analytics & Consulting to unlock the full potential of your data."),
+          
+          tags$h3("What We Offer"),
+          tags$ul(
+            tags$li("Customized analytics consulting for institutions and businesses"),
+            tags$li("Hands-on training workshops on data visualization and predictive modeling"),
+            tags$li("Strategic guidance for data-driven decision-making")
+          ),
+          
+          tags$h3("Why Work With Us"),
+          tags$p("We combine technical expertise with a human-centered approach, ensuring your team gains practical skills and actionable insights."),
+          
+          tags$h3("Get in Touch"),
+          tags$p("For project collaborations, workshops, or tailored solutions, email us at "),
+          tags$a(href = "mailto:info@emlstat.uk", "info@emlstat.uk")
+        )
+      )
+      ,
+      tabItem(
+        tabName = "about",
+        fluidPage(
+          tags$h2("About EMLStat"),
+          tags$p("EMLStat Analytics & Consulting helps institutions make better decisions using data."),
+          tags$hr(),
+          
+          # Tagline
+          tags$h3("Tagline"),
+          tags$p("Turning Data Into Decisions That Matter."),
+          
+          # Humanized description
+          tags$h3("Who We Are"),
+          tags$p("At EMLStat Analytics & Consulting, we believe data should work for people—not the other way around. We turn complex information into clear, actionable insights that help teams move with confidence."),
+          
+          # Mission
+          tags$h3("Mission"),
+          tags$p("Our mission is to help organizations unlock the true potential of their data by delivering insights and strategic guidance that drive growth, efficiency, and innovation—always with a human touch."),
+          
+          # Vision
+          tags$h3("Vision"),
+          tags$p("Our vision is a world where data empowers every decision, making institutions smarter, more agile, and more connected to the people they serve."),
+          
+          # Optional: Core services (feel free to edit or remove)
+          tags$h3("Core Services"),
+          tags$ul(
+            tags$li("Business intelligence dashboards & data visualization"),
+            tags$li("Predictive modeling & performance analytics"),
+            tags$li("Data strategy, governance, and quality"),
+            tags$li("Process optimization & decision support")
+          )
+        )
+      )
+      
     )
   )
 )
