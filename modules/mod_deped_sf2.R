@@ -26,7 +26,7 @@ library("openxlsx")
 # options(shiny.fullstacktrace = TRUE)
 
 # ---- Storage paths ----
-.data_dir            <- "data"
+.data_dir            <- .data_dir <- Sys.getenv("APP_DATA_DIR", "/srv/shiny-server/data") #"data"
 .users_rds_path      <- file.path(.data_dir, "users.rds")
 .attendance_rds_path <- file.path(.data_dir, "attendance.rds")
 .qr_dir              <- file.path(.data_dir, "qrcodes")
