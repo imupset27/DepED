@@ -4,6 +4,7 @@ options(shiny.maxRequestSize = 30*1024^2)     # ~30MB uploads
 options(shiny.fullstacktrace = TRUE)          # helpful while debugging
 
 # app.R
+library(auth0)
 library(shiny)
 library(bs4Dash)
 library(shinyWidgets)
@@ -270,4 +271,5 @@ server <- function(input, output, session) {
   mod_deped_server("deped")
 }
 
-shinyApp(ui, server)
+#shinyApp(ui, server)
+auth0::shinyAppAuth0(ui, server)
