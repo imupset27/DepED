@@ -1,12 +1,21 @@
 version: "3.8"
+
 services:
   shiny:
     build:
       context: .
       dockerfile: Dockerfile
-    ports:
-      - "8080:3838"           # host:container
+      # Optional: host networking for RUN steps during build
+      network: host
+    network_mode: "host"  # runtime: container shares host network
+    # Do NOT specify `ports:` when using host network
     env_file:
-      - stack.env             # provided by Portainer when you "Load variables from .env"
+      - stack.env
     environment:
-      APPLICATION_LOGS_TO_STDOUT: "true"  # see rocker docs
+      APPLICATION_LOGS_TO_STDOUT: "true"
+      APP_DATA_DIR: "/srv/shiny-server/data"
+    volumes:
+      - shiny-data:/srv/shiny-server/data
+
+volumes:
+  shiny-data:
