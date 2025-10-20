@@ -16,6 +16,7 @@ services:
       APP_DATA_DIR: "/srv/shiny-server/data"
     volumes:
       - shiny-data:/srv/shiny-server/data
+    restart: always 
 
 volumes:
   shiny-data:
