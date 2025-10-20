@@ -11,6 +11,8 @@ library(shinyWidgets)
 library(fontawesome)
 library(shinyjs)
 
+options(auth0_config_file = Sys.getenv("AUTH0_CONFIG", "/srv/shiny-server/_auth0.yml"))
+
 # ---- MODULES ----
 source("modules/mod_deped.R")
 source("modules/mod_deped_sf1.R")
