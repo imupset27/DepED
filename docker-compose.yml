@@ -20,5 +20,4 @@ services:
 
 volumes:
   shiny-data:
-    driver: local
     external: true
