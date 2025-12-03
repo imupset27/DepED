@@ -179,7 +179,7 @@ ui <- bs4DashPage(
             class = "footer",
             # Brand
             tags$span("© 2025 "),
-            tags$b("EMLStat Analytics & Consulting"),
+            tags$b("EMLStat"),
             
             # Spacing separator
             HTML(" | "),
