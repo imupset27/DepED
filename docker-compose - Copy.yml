@@ -16,9 +16,6 @@ services:
       APP_DATA_DIR: "/srv/shiny-server/data"
     volumes:
       - shiny-data:/srv/shiny-server/data
-    dns:
-      - 8.8.8.8      # Google DNS
-      - 1.1.1.1      # Cloudflare DNS
     restart: always 
 
 volumes:
