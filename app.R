@@ -17,6 +17,7 @@ source("modules/mod_deped_sf1.R")
 source("modules/mod_deped_sf2.R")
 source("modules/mod_deped_sf9.R")
 source("modules/mod_deped_mps.R")
+source("modules/mod_deped_akap.R")
 
 # -------------------- UI --------------------
 ui <- bs4DashPage(
