@@ -119,6 +119,16 @@ compute_valid_flags <- function(df_all) {
   rowSums(mat != "") == ncol(mat)
 }
 
+# Enforce canonical column names (by order) on a single file's B..N block
+enforce_canonical_bn_names <- function(df_BN) {
+  expected <- length(mod_deped_akap_constants$CANONICAL_BN_NAMES)
+  if (ncol(df_BN) != expected) {
+    stop(paste0("Expected ", expected, " columns but found ", ncol(df_BN), "."))
+  }
+  names(df_BN) <- mod_deped_akap_constants$CANONICAL_BN_NAMES
+  df_BN
+}
+
 # >>> Grade standardization & frequency helpers
 grade_categories <- c("Kinder", paste0("Grade ", 1:12), "ALS", "SNED", "UNKNOWN")
 standardize_grade <- function(x) {
