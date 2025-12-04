@@ -86,10 +86,18 @@ mod_deped_ui <- function(id) {
         column(4,
                div(id = ns("card_sf2"), class = "feature-card",
                    `onclick` = sprintf("Shiny.setInputValue('%s', true, {priority: 'event'})", ns("card_sf2")),
-                   icon("school", class = "feature-icon"),
+                   icon("university", class = "feature-icon"),
                    tags$h5("SF2: Attendance App"),
                    tags$p("Attendance System with use of QR codes and automatic downloadable realtime reports."))
+        ),
+        column(4,
+               div(id = ns("card_akap"), class = "feature-card",
+                   `onclick` = sprintf("Shiny.setInputValue('%s', true, {priority: 'event'})", ns("card_akap")),
+                   icon("chalkboard-teacher", class = "feature-icon"),
+                   tags$h5("AKAP Data Manager"),
+                   tags$p("A simple tool to validate, clean, and summarize AKAP Baseline Data with quick reports and downloadable Excel outputs."))
         )
+        
       )
       
       
@@ -109,6 +117,7 @@ mod_deped_server <- function(id) {
     observeEvent(input$card_lrn, { rv("lrn") })
     observeEvent(input$card_mps, { rv("mps") })
     observeEvent(input$card_sf2, { rv("sf2") })
+    observeEvent(input$card_akap, { rv("akap") })
     
     observe({
       if (is.null(rv())) {
@@ -125,7 +134,8 @@ mod_deped_server <- function(id) {
                "lrn" = mod_deped_sf1_ui(ns("lrn")),
                "sf2" = mod_deped_sf2_ui(ns("sf2")),
                "grades" = mod_deped_sf9_ui(ns("grades")),
-               "mps" = mod_deped_mps_ui(ns("mps"))
+               "mps" = mod_deped_mps_ui(ns("mps")),
+               "akap" = mod_deped_akap_ui(ns("akap"))
         ),
         hr(),
         div(
@@ -151,6 +161,7 @@ mod_deped_server <- function(id) {
       if (rv() == "grades") mod_deped_sf9_server("grades")
       else if (rv() == "lrn") mod_deped_sf1_server("lrn")
       else if (rv() == "mps") mod_deped_mps_server("mps")
+      else if (rv() == "akap") mod_deped_akap_server("akap")
       else if (rv() == "sf2") mod_deped_sf2_server("sf2", reactive(parseQueryString(session$clientData$url_search)))
     }, ignoreInit = TRUE)
     
