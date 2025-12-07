@@ -225,7 +225,7 @@ mod_deped_akap_ui <- function(id, title = "AKAP Data Manager") {
     sidebarLayout(
       sidebarPanel(
         fileInput(ns("files"), "Upload Excel files (.xlsx)", accept = c(".xlsx"), multiple = TRUE),
-        checkboxInput(ns("drop_empty_teacher"), "Drop rows with empty Teacher", value = TRUE),
+        checkboxInput(ns("drop_empty_teacher"), "Drop rows with empty Teacher", value = F),
         helpText(HTML(
           paste(
             "Reads only <b>BASELINE DATA</b> in each file.",
@@ -244,14 +244,9 @@ mod_deped_akap_ui <- function(id, title = "AKAP Data Manager") {
         )
       ),
       mainPanel(
-        h4("Summary by LEVEL + SCHOOL"),
-        DTOutput(ns("summary")),
-        tags$hr(),
-        h4("Sample of INVALID rows"),
-        DTOutput(ns("sample_unvalid")),
-        tags$hr(),
-        h4("Frequency: Grade Level & Reclassification (grouped by SCHOOL)"),
-        DTOutput(ns("freq_by_school"))
+        uiOutput(ns("summary_ui")),
+        uiOutput(ns("sample_unvalid_ui")),
+        uiOutput(ns("freq_by_school_ui"))
       )
     )
   )
@@ -284,7 +279,7 @@ mod_deped_akap_server <- function(id) {
     
     output$status <- renderUI({
       if (is.null(rv$df_all_BN)) {
-        tags$div(class = "text-muted", "No files processed yet.")
+        tags$div(class = "text-muted", "No files processed yet. Reports will be be visible after successful upload.")
       } else {
         valid_n <- sum(rv$valid_flags)
         total_n <- nrow(rv$df_all_BN)
@@ -604,48 +599,81 @@ mod_deped_akap_server <- function(id) {
     }, ignoreInit = TRUE)
     
     # Summary table
-    output$summary <- DT::renderDT({
-      req(rv$summary_df)
-      DT::datatable(
-        rv$summary_df,
-        rownames = FALSE,
-        options = list(
-          lengthMenu = list(c(5, 10, 25, 50, 100), c('5', '10', '25', '50', '100')),
-          pageLength = 10,
-          dom = "frtip"
-        )
-      )
-    }, server = FALSE)
-    
-    # Sample of UNVALID rows
-    output$sample_unvalid <- DT::renderDT({
-      req(rv$df_all_BN, rv$valid_flags)
-      unv <- rv$df_all_BN[!rv$valid_flags, , drop = FALSE]
-      DT::datatable(
-        head(unv, 25),
-        options = list(
-          lengthMenu = list(c(5, 10, 25, 50, 100), c('5', '10', '25', '50', '100')),
-          pageLength = 10,
-          scrollX = TRUE,
-          dom = "frtip"
-        )
+    output$summary_ui <- renderUI({
+      req(rv$summary_df)   # only show after file upload
+      tagList(
+        h4(HTML("<b>Summary of Cases</b>")),
+        DT::renderDT({
+          DT::datatable(
+            rv$summary_df,
+            rownames = FALSE,
+            options = list(
+              lengthMenu = list(c(5, 10, 25, 50, 100), c('5', '10', '25', '50', '100')),
+              pageLength = 5,
+              dom = "rtip"
+            )
+          )
+        }, server = FALSE),
+        tags$hr()
       )
     })
     
-    # Frequency report table
-    output$freq_by_school <- DT::renderDT({
-      req(rv$freq_combined_long)
-      DT::datatable(
-        rv$freq_combined_long,
-        rownames = FALSE,
-        options = list(
-          lengthMenu = list(c(5, 10, 25, 50, 100), c('5', '10', '25', '50', '100')),
-          pageLength = 10,
-          scrollX = TRUE,
-          dom = "frtip"
-        )
+    # Sample of UNVALID rows
+    output$sample_unvalid_ui <- renderUI({
+      req(rv$summary_df)   # only show after file upload
+      tagList(
+        h4(HTML("<b>List of Invalid Cases</b>")),
+        #h5(HTML("<b>Note:</b> Cases with missing teacher not included")),
+        DT::renderDT({
+          req(rv$df_all_BN, rv$valid_flags)
+          unv <- rv$df_all_BN[!rv$valid_flags, , drop = FALSE]
+          # Remove last column
+          unv <- unv[, -ncol(unv), drop = FALSE]
+          DT::datatable(
+            head(unv, 25),
+            rownames = FALSE,
+            options = list(
+              lengthMenu = list(c(5, 10, 25, 50, 100), c('5', '10', '25', '50', '100')),
+              pageLength = 5,
+              scrollX = TRUE,
+              dom = "rtip"
+              
+            )
+          )
+        }, server = FALSE),
+        tags$hr()
       )
-    }, server = FALSE)
+      
+      
+    })
+    
+    # Frequency report table
+     output$freq_by_school_ui <- renderUI({
+      req(rv$summary_df)   # only show after file upload
+      tagList(
+        h4(HTML("<b>Counts by Grade Level and AKAP (Re)Classification</b>")),
+        h5(HTML("<b>Note:</b> This report is included in the downloaded zip file.")),
+        DT::renderDT({
+          req(rv$freq_combined_long)
+          DT::datatable(
+            rv$freq_combined_long,
+            rownames = FALSE,
+            options = list(
+              lengthMenu = list(c(5, 10, 25, 50, 100), c('5', '10', '25', '50', '100')),
+              pageLength = 5,
+              scrollX = TRUE,
+              dom = "rtip"
+            )
+          )
+        }, server = FALSE)
+        
+      )
+      
+      
+      
+      
+    })
+    
     
     # === Single download handler (ZIP), with guards ===
     output$dl_zip <- downloadHandler(
